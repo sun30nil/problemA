@@ -3,6 +3,7 @@ import nltk
 import re
 import csv
 import operator
+import pygal
 
 def cleanChatData(inFile, outFile, n_cols):
     with open(inFile,"rb") as source:
@@ -120,14 +121,31 @@ def call2():
         freqDict[each] = len(locDict[each])
         
     sorted_cities = sorted(freqDict.items(), key=operator.itemgetter(1),reverse=True)
-    print sorted_cities[0:5]
-
+    print "Location\t\t# of users"
+    for k,v in sorted_cities[0:5]:
+        print k,"\t\t",v
     pass
 def call3():
-    
+    locDict = {}
+    for users in myMap.keys():
+        for loc in myMap[users]:
+            if loc in locDict.keys():
+                locDict[loc].append(users)
+            else:
+                locDict[loc] = [users]
+    freqDict = {}
+    for each in locDict.keys():
+        freqDict[each] = len(locDict[each])
+    bar_chart = pygal.Bar()
+    bar_chart.title = '# of users in a location'
+    #bar_chart.x_labels = locDict.keys()
+    for each in freqDict.keys():
+        bar_chart.add(each, freqDict[each])
+    bar_chart.render_to_file('AnalyticsBar.svg')
+    print "Please find the out file by opening AnalyticsBar.svg"
     pass
 def call4():
-    
+    print "coming soon...."
     pass
 
 myMap = None
@@ -137,7 +155,7 @@ if __name__ == '__main__':
         print "Stayzilla MENU:"
         print "1. Users talking about Travel/Accomodation"
         print "2. Top 5 Location with Maximum Users"
-        print "3. Yet to come"
+        print "3. Bar chart of the distribution of the users"
         print "4. Yet to come"
         print "0 Exit"
         option = int(raw_input("Select an Option: "))
